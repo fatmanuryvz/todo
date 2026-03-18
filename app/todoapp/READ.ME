@@ -1,0 +1,133 @@
+# FastAPI To-Do Application
+
+## Overview
+This project is a To-Do application built using **FastAPI**, **PostgreSQL**, **SQLAlchemy**, and **Redis**. It follows the **3-tier architecture**, separating the API, business logic, and data layers. The application supports user authentication and task management with caching mechanisms using Redis.
+
+## Features
+- **User Registration & Login** (JWT Authentication)
+- **Create, Retrieve To-Dos** (CRUD operations)
+- **Redis Cache** (Stores To-Do lists for 5 minutes to reduce database load)
+- **PostgreSQL for Persistent Data Storage**
+- **Docker Support** (Optional for containerized deployment)
+
+## Project Structure
+```
+app/
+│── api/controller
+│   ├── auth.py         # Authentication endpoints
+│   ├── todo.py         # To-Do endpoints
+│
+│── core/service
+│   ├── todo_service.py         # JWT handling and authentication logic
+│   ├── user_service.py         # JWT handling and authentication logic
+│
+│── core/models
+│   ├── todo.py         #  SQLAlchemy database models
+│   ├── user.py         #  SQLAlchemy database models
+│
+│── infra/repository/entities
+│   ├── todo_entity.py         # Pydantic schemas for request/response validation
+│   ├── user_entity.py         # Pydantic schemas for request/response validation
+│
+│── infra/repository
+│   ├── todo_repository.py         # CRUD Operations
+│   ├── user_repository.py         # CRUD Operations
+│
+│── database.py         # Database connection setup
+│── main.py             # FastAPI app entry point
+```
+
+## Prerequisites
+Ensure you have the following installed:
+- Python 3.9+
+- PostgreSQL
+- Redis
+
+## Installation & Setup
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-repo/fastapi-todo.git
+cd fastapi-todo
+```
+
+### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Database
+Update the **database.py** file with your PostgreSQL credentials:
+```python
+SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_IP}:{POSTGRES_PORT}/{POSTGRES_DB}?user={POSTGRES_USERNAME}&password={POSTGRES_PASSWORD}"
+```
+Create the database:
+```sql
+CREATE DATABASE todoapp;
+```
+
+### 4. Run the API
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 5. API Documentation
+After starting the server, you can explore the API with Swagger UI:
+- **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Redoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+## API Endpoints
+### **User Authentication**
+#### Register User
+```http
+POST /auth/register
+```
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+#### Login User
+```http
+POST /auth/login
+```
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+### **To-Do Management**
+#### Create To-Do
+```http
+POST /todos/
+Authorization: Bearer <JWT Token>
+```
+```json
+{
+  "title": "Buy Groceries",
+  "description": "Milk, Bread, Eggs"
+}
+```
+
+#### Get To-Do List (Uses Redis Cache)
+```http
+GET /todos/
+Authorization: Bearer <JWT Token>
+```
+
+## Running with Docker
+If you prefer Docker, use the following:
+### 1. Build and Run
+```bash
+docker-compose up --build
+```
+This will start **PostgreSQL, Redis, and FastAPI** in separate containers.
+
+## Contributing
+Feel free to fork and contribute to the project!
+
+## License
+This project is licensed under the MIT License.

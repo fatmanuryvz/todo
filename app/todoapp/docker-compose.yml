@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+      POSTGRES_DB: todos
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  app:
+    build: .
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8000:8000"
